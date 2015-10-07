@@ -1,3 +1,7 @@
+#this the initial test file 
+#author : suraj gaud
+
+
 getwd()
 pima<- read.csv("pima.csv")
 head(pima)

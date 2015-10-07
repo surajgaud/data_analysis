@@ -1,3 +1,7 @@
+#learning data manipulation with the mosiac packages
+#author suraj gaud
+
+
 require(mosaic)
 require(mosaicData)
 help(read.table)
