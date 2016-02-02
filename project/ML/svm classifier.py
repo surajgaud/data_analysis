@@ -4,7 +4,7 @@ __author__ = 'Suraj'
 """
     this is the code to accompany the Lesson 2 (SVM) mini-project
     use an SVM to identify emails from the Enron corpus by their authors
-
+    for kaggle
     Sara has label 0
     Chris has label 1
 """
