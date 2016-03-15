@@ -1,0 +1,345 @@
+
+
+    from bs4 import BeautifulSoup
+    import urllib
+    import pandas
+    from pandas import DataFrame
+    import re
+
+
+    # Getting html elements from zomato website using BeautifulSoup
+    url = 'https://www.zomato.com/san-antonio/top-restaurants'
+    htmlt=urllib.urlopen(url).read()
+    s=BeautifulSoup(htmlt)
+
+
+    # Scraping Restaurant Names using Regex
+    reg = '<span>(.+?)</span>'
+    tags=s('span')
+    q=re.findall(reg,htmlt)
+    reg2 = '<span>(.+?)</span>'
+    q=re.findall(reg2,str(tags))
+    name=q[4:] # removing 1st 4 lines
+
+
+    # Scraping ratings: 
+    rat=s.findAll("div",attrs = {"class" : "collection_res_details_wrap"})
+    regr='\d+\.\d'   #
+    ratt=re.findall(regr,str(rat))
+    cui=s.findAll("div", attrs= {"class" : "top-res-box-cuisine2"})
+
+
+    # Scraping Cuisines
+    regcui='</span>(.+?)</div>'
+    cuis=re.findall(regcui,str(cui))
+
+
+    # Scraping address 
+    ad=s.findAll("div", attrs= {"class" : "top-res-box-zone"})
+    addr=[]
+    for i in ad:
+        addr.append(i.text.strip())
+
+
+    # Scraping count of Reviews
+    rev=s.findAll("div", attrs= {"class" : "clearfix res-box-menu"})
+
+
+    # Some restaurants have menus - below is a code to get rid of it!! Could have used string functions, 
+    #but i wanted to waste time playing with strings:/
+    rew=[]
+    for o in rev:
+        stp=o.text.strip()
+        if len(stp)>11:
+            li=[]
+            word=stp
+            i=len(word)-1
+            for p in range(10):
+                li.append(word[i])
+                count = 0
+                i=i-1
+            s = ''.join(li)
+            w=str(s)
+            revstg=w[::-1]
+            rew.append(revstg)
+        else : rew.append(o.text.strip())
+
+
+    
+
+
+    # Creating a DataFrame for restaurants
+    d1={"Restuarant Name": name , "Avg ratings":ratt, "Cuisine":cuis, "Address" : addr, "Avg Reviews" : rew}
+
+
+    zrev=pandas.DataFrame({k : pandas.Series(v) for k, v in d1.iteritems()})
+
+
+    zrev
+    # Creating a csv file
+    #zrev.to_csv('C://Projects/san-antonio.csv', sep=',')
+
+
+
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Address</th>
+      <th>Avg Reviews</th>
+      <th>Avg ratings</th>
+      <th>Cuisine</th>
+      <th>Restuarant Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Alamo Heights</td>
+      <td>56 Reviews</td>
+      <td>3.7</td>
+      <td>Italian</td>
+      <td>Paloma Blanca Mexican Cuisine</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Alamo Heights</td>
+      <td>03 Reviews</td>
+      <td>3.9</td>
+      <td>Mexican</td>
+      <td>Pancake Joes</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Jefferson/Deco District</td>
+      <td>29 Reviews</td>
+      <td>4.2</td>
+      <td>American</td>
+      <td>Bei Fang Chinese</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Northwest Side</td>
+      <td>13 Reviews</td>
+      <td>3.6</td>
+      <td>Chinese</td>
+      <td>Rosario's Mexican Cafe y Cantina</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>King William</td>
+      <td>87 Reviews</td>
+      <td>4.0</td>
+      <td>Tex-Mex, Mexican</td>
+      <td>Kimura</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Central Business District</td>
+      <td>28 Reviews</td>
+      <td>3.7</td>
+      <td>Ramen, Japanese</td>
+      <td>Burger Boy</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Midtown</td>
+      <td>16 Reviews</td>
+      <td>4.2</td>
+      <td>Burger</td>
+      <td>Pacific Moon</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Uptown</td>
+      <td>13 Reviews</td>
+      <td>3.6</td>
+      <td>Chinese, Korean</td>
+      <td>Lee's El Taco Garage</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Alamo Heights</td>
+      <td>80 Reviews</td>
+      <td>3.7</td>
+      <td>Mexican, Tex-Mex</td>
+      <td>New Asia Restaurant</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Northwest Side</td>
+      <td>7 Reviews</td>
+      <td>4.0</td>
+      <td>Chinese</td>
+      <td>Cerroni's Purple Garlic</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Alamo Heights</td>
+      <td>09 Reviews</td>
+      <td>4.3</td>
+      <td>Italian</td>
+      <td>Fattboy Burgers &amp;amp; Dogs</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>North Central</td>
+      <td>40 Reviews</td>
+      <td>4.4</td>
+      <td>Burger, Desserts</td>
+      <td>Big Lou's Pizza</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>East Side</td>
+      <td>51 Reviews</td>
+      <td>4.0</td>
+      <td>Pizza, Sandwich</td>
+      <td>Taqueria Datapoint</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>Northwest Side</td>
+      <td>27 Reviews</td>
+      <td>4.0</td>
+      <td>Mexican</td>
+      <td>Mary Lou's Cafe</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>Olmos Park</td>
+      <td>64 Reviews</td>
+      <td>3.5</td>
+      <td>Mexican</td>
+      <td>Lung Fung Chinese</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>North Central</td>
+      <td>16 Reviews</td>
+      <td>3.7</td>
+      <td>Chinese</td>
+      <td>Sweet Yams Organic</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>East Side</td>
+      <td>10 Reviews</td>
+      <td>3.9</td>
+      <td>Southern</td>
+      <td>Thousand Oaks Cafe III</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>Uptown</td>
+      <td>28 Reviews</td>
+      <td>3.5</td>
+      <td>Tex-Mex</td>
+      <td>Chatman's Chicken</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>East Side</td>
+      <td>30 Reviews</td>
+      <td>4.4</td>
+      <td>Southern</td>
+      <td>Floyd's Dairy Bar</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>East Side</td>
+      <td>8 Reviews</td>
+      <td>4.2</td>
+      <td>Burger, Desserts</td>
+      <td>Bird Bakery</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>Alamo Heights</td>
+      <td>49 Reviews</td>
+      <td>3.6</td>
+      <td>Cafe, Sandwich, Desserts</td>
+      <td>Mr &amp;amp; Mrs G's Home Cooking</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>East Side</td>
+      <td>26 Reviews</td>
+      <td>4.3</td>
+      <td>Southern</td>
+      <td>Cascabel Mexican Patio</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>Southtown</td>
+      <td>21 Reviews</td>
+      <td>4.6</td>
+      <td>Tex-Mex, Mexican</td>
+      <td>Colonial Room - Menger Hotel</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>Central Business District</td>
+      <td>14 Reviews</td>
+      <td>3.9</td>
+      <td>American</td>
+      <td>Sandbar Fish House &amp;amp; Market</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>Midtown</td>
+      <td>59 Reviews</td>
+      <td>3.7</td>
+      <td>Seafood</td>
+      <td>Tellez Tamales and Barbacoa</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>South Side</td>
+      <td>19 Reviews</td>
+      <td>4.3</td>
+      <td>Mexican, Tex-Mex</td>
+      <td>Delicious Garden</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>Redland Oaks</td>
+      <td>28 Reviews</td>
+      <td>3.8</td>
+      <td>Chinese</td>
+      <td>Christan's Tacos</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>Windcrest</td>
+      <td>13 Reviews</td>
+      <td>3.8</td>
+      <td>Taco, Tex-Mex, Mexican</td>
+      <td>Thai Hot</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>Far West Side</td>
+      <td>10 Reviews</td>
+      <td>3.6</td>
+      <td>Thai</td>
+      <td>Madhatters</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>King William</td>
+      <td>53 Reviews</td>
+      <td>3.8</td>
+      <td>Tea, Cafe</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+    
